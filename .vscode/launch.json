@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "debugpy",
+      "request": "launch",
+      "name": "Launch FastAPI App as Module",
+      "module": "src.main",
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env.local",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

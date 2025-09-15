@@ -1,0 +1,1 @@
+from .education_entity import EducationEntity
