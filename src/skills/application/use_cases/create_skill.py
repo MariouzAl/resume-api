@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-from datetime import date
 from uuid import UUID, uuid4
 from src.ddd_components.use_case import UseCase
 from src.skills.domain.base_skill_repository import (
