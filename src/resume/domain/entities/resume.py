@@ -1,6 +1,7 @@
 
 from src.education.domain.entities.education_entity import EducationEntity
 from src.language.domain.entities.language_entity import Language
+from src.professional_experience.domain.entities.company_type import CompanyType
 from src.professional_experience.domain.entities.professional_experience import ProfessionalExperience
 from src.profile.domain.entitites.profile_entity import ProfileEntity
 from src.resume_focus import ResumeFocus
@@ -27,7 +28,8 @@ class ResumeEntity:
         skills : list[Skill],
         professional_experiences:list[ProfessionalExperience],
         education:list[EducationEntity],
-        languages :list[Language]
+        languages :list[Language],
+        industries:list[CompanyType]
                  ) -> None:
             self.focus=get_focus(focus)
             self.profile=profile
@@ -36,3 +38,4 @@ class ResumeEntity:
             self.professional_experiences=professional_experiences
             self.education=education
             self.languages=languages
+            self.industries=industries

@@ -8,9 +8,11 @@ from src.education.application.use_cases.get_education_list import GetEducationL
 from src.education.infrastructure.repositories.sqlmodel_education_repository import SQLModelEducationRepository
 from src.language.application.use_cases.get_all_language import GetAllLanguages
 from src.language.infrastructure.repositories.sqlmodel_language_repository import SQLLanguageRepository
+from src.professional_experience.application.use_cases.get_all_industries import GetAllIndustries
 from src.professional_experience.application.use_cases.get_all_professional_experience import (
     GetAllProfessionalExperience,
 )
+from src.professional_experience.infrastructure.repositories.sqlmodel_company_type_repository import SQLModelCompanyTypeRepository
 from src.professional_experience.infrastructure.repositories.sqlmodel_professional_experience_repository import (
     SQLModelProfessionalExperienceRepository,
 )
@@ -41,6 +43,7 @@ class Language(Enum):
     ES = "es"
 
 def get_get_resume_usecase(session)->GetResume:
+    company_type_repo= SQLModelCompanyTypeRepository(session)
     profile_repo = SQLModelProfileRepository(session)
     tech_profile_repo = SQLModelTechProfileRepository(session)
     skill_repo = SkillRepository(session=session)
@@ -50,6 +53,7 @@ def get_get_resume_usecase(session)->GetResume:
     education_repo = SQLModelEducationRepository(session=session)
     language_repo = SQLLanguageRepository(session=session)
 
+    get_all_company_type = GetAllIndustries(company_type_repo)
     get_profile_by_id = GetProfileById(profile_repo)
     get_tech_profile_by_id = GetTechProfiles(tech_profile_repo)
     find_skill_by_id = FindSkillLikeName(skill_repo)
@@ -64,7 +68,8 @@ def get_get_resume_usecase(session)->GetResume:
         find_skill_by_id,
         get_all_professional_experience,
         get_all_education,
-        get_all_language
+        get_all_language,
+        get_all_company_type
     )
 
 @router.get("/")
@@ -76,7 +81,7 @@ def get_resume(
     get_resume_usecase = get_get_resume_usecase(session)
     resume_data = get_resume_usecase.execute(
         GetResumeParams(
-            UUID("9544d18d3a55420bb316b74aab2d0e6f"),
+            UUID('85faeb1c591d4e95af363d87b92d3996'),
             resume_focus.value,
             skills_list=skill_list,
         )

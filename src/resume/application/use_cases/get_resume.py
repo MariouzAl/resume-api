@@ -3,6 +3,7 @@ from uuid import UUID
 from src.ddd_components.use_case import UseCase
 from src.education.application.use_cases.get_education_list import GetEducationList
 from src.language.application.use_cases.get_all_language import GetAllLanguages
+from src.professional_experience.application.use_cases.get_all_industries import GetAllIndustries
 from src.professional_experience.application.use_cases.get_all_professional_experience import (
     GetAllProfessionalExperience,
 )
@@ -34,7 +35,8 @@ class GetResume(UseCase):
         find_skills_use_case: FindSkillLikeName,
         get_professional_experiences_use_case: GetAllProfessionalExperience,
         get_all_education : GetEducationList,
-        get_all_language : GetAllLanguages
+        get_all_language : GetAllLanguages,
+        get_all_company_type:GetAllIndustries
     ):
         self.get_profile_use_case = get_profile_use_case
         self.get_tech_profile_use_case = get_tech_profile_use_case
@@ -44,8 +46,11 @@ class GetResume(UseCase):
         )
         self.get_all_education=get_all_education
         self.get_all_language_use_case=get_all_language
+        self.get_all_company_type_use_case=get_all_company_type
+        
 
     def execute(self, params: GetResumeParams) -> ResumeEntity | None:
+        industries=self.get_all_company_type_use_case.execute()
         profile = self.get_profile_use_case.execute(params=GetProfileParms(params.id))
         if profile is None:
             return None
@@ -66,6 +71,7 @@ class GetResume(UseCase):
             skills=skills,
             professional_experiences=professional_experiences,
             education=education,
-            languages=languages
+            languages=languages,
+            industries=industries
         )
         return resume

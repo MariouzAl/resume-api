@@ -1,3 +1,4 @@
+from src.professional_experience.domain.entities.company_type import CompanyType
 from src.resume.application.use_cases.i_resume_generator import IResumeGenerator
 from src.resume.domain.entities.resume import ResumeEntity
 
@@ -57,17 +58,7 @@ class PDFResumeGenarator(IResumeGenerator):
             cols.ln()
             pdf.set_font("Helvetica", "", 9)
             pdf.set_text_color(26, 27, 38)
-            cols.write(text="- Healthcare")
-            cols.ln()
-            cols.write(text="- Education")
-            cols.ln()
-            cols.write(text="- Business Intelligence")
-            cols.ln()
-            cols.write(text="- Military")
-            cols.ln()
-            cols.write(text="- International Trade")
-            cols.ln()
-            cols.write(text="- Scientific Research")
+            self.write_industries(cols,data.industries)
             cols.ln()
             cols.ln()
             pdf.set_font("Helvetica", "B", 16)
@@ -88,14 +79,16 @@ class PDFResumeGenarator(IResumeGenerator):
         pdf.set_font("Helvetica", "B", 16)
         pdf.set_font_size(12)
         pdf.set_text_color(0, 85, 150)
+        pdf.ln()
+        pdf.ln()
         pdf.cell(0, 4, text="TECHNICAL SKILLS", ln=True, align="L")
         pdf.ln()
         pdf.set_font("Helvetica", "", 9)
         pdf.set_text_color(26, 27, 38)
+        midpoint = len(data.skills) // 2 + len(data.skills) % 2
+        skills_list = [data.skills[:midpoint], data.skills[midpoint:]]
         ypos = pdf.get_y()
         xpos = pdf.get_x()
-        midpoint = len(data.skills) // 2
-        skills_list = [data.skills[:midpoint], data.skills[midpoint:]]
         with pdf.table(
             col_widths=(2, 1, 1),
             width=85,
@@ -131,11 +124,12 @@ class PDFResumeGenarator(IResumeGenerator):
 
         pdf.set_x(xpos)
         pdf.ln()
+        pdf.ln()
+        pdf.ln()
         pdf.set_font("Helvetica", "B", 16)
         pdf.set_font_size(12)
         pdf.set_text_color(0, 85, 150)
         pdf.cell(0, 4, text="PROFESSIONAL EXPERIENCE", ln=True, align="L")
-        pdf.ln()
         initial_x = pdf.get_x()
         for pe in data.professional_experiences:
             pdf.ln()
@@ -151,7 +145,7 @@ class PDFResumeGenarator(IResumeGenerator):
                 )
                 pdf.ln(pdf.font_size * 2)
 
-                PADDING_LEFT = 50
+                PADDING_LEFT = 22
                 pdf.set_x(initial_x + PADDING_LEFT)
                 pdf.set_font("Helvetica", "BU", 10)
                 pdf.set_text_color(26, 27, 38)
@@ -159,7 +153,7 @@ class PDFResumeGenarator(IResumeGenerator):
                 pdf.set_font("Helvetica", "", 9)
                 pdf.set_x(pdf.get_x() + 3)
                 pdf.multi_cell(
-                    w=pdf.w - pdf.l_margin - pdf.r_margin - PADDING_LEFT - 5,
+                    w=pdf.w - pdf.l_margin - pdf.r_margin - PADDING_LEFT - 18,
                     ln=True,
                     text=f"{pro.shortDescription}",
                 )
@@ -171,22 +165,23 @@ class PDFResumeGenarator(IResumeGenerator):
                 pdf.set_font("Helvetica", "", 9)
                 for resp in pro.responsibilities:
                     pdf.set_x(initial_x + PADDING_LEFT)
-                    pdf.cell(text=f"-{resp}", ln=True)
+                    pdf.multi_cell(text=f"- {resp}", ln=True,w=pdf.w - pdf.l_margin - pdf.r_margin - PADDING_LEFT - 5,)
                 pdf.ln(pdf.font_size * 1.5)
                 pdf.set_font("Helvetica", "BU", 10)
                 pdf.set_x(initial_x + PADDING_LEFT)
-                pdf.cell(text="Tecnologies:", ln=True)
+                pdf.cell(text="Tecnologies/Skills:", ln=True)
                 pdf.ln(pdf.font_size * 1.2)
                 pdf.set_font("Helvetica", "", 9)
-                for tech in pro.builtWith:
-                    pdf.set_x(initial_x + PADDING_LEFT)
-                    pdf.cell(text=f"-{tech}", ln=True)
-                pdf.ln(pdf.font_size * 1.5)
+                tech_stack=", ".join(pro.builtWith)
+                pdf.set_x(initial_x + PADDING_LEFT)
+                pdf.multi_cell(text=f"{tech_stack}", ln=True,w=0)
+                pdf.ln(pdf.font_size * 2)
 
         pdf.set_font("Helvetica", "B", 16)
         pdf.set_font_size(12)
         pdf.set_text_color(0, 85, 150)
         pdf.cell(0, 4, text="EDUCATION", ln=True, align="L")
+        pdf.ln()
         pdf.set_font("Helvetica", "", 10)
         pdf.set_text_color(26, 27, 38)
         for ed_item in data.education:
@@ -199,3 +194,8 @@ class PDFResumeGenarator(IResumeGenerator):
             pdf.ln()
 
         return bytes(pdf.output())
+
+    def write_industries(self, cols,industries:list[CompanyType]):
+        for industry in industries:
+            cols.write(text=f"- {industry.name}")
+            cols.ln()
