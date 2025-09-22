@@ -166,6 +166,7 @@ def upgrade() -> None:
     project_categories_dict = add_project_categories(session)
     add_languages(session)
     profile = add_profile(session)
+    session.commit()
     add_tech_profile(session)
     add_education(session, profile)
     company_type_dict = add_company_type(session)
