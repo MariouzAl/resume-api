@@ -24,6 +24,24 @@ from sqlalchemy import pool
 from sqlmodel import SQLModel
 
 from alembic import context
+import os
+from dotenv import load_dotenv
+
+
+# Get the connection string from the environment
+ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
+
+print("WE ARE RUNNIN IN: ",ENVIRONMENT,"ENVIRONMENT")
+
+if ENVIRONMENT == "development":
+    # Load the local environment variables from .env.local
+    print('Load the local environment variables from .env.local')
+    load_dotenv(".env.local")
+elif ENVIRONMENT == "production":
+    # Load the production environment variables from .env
+    print('Load the production environment variables from .env')
+    load_dotenv(".env")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -88,6 +106,9 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    if DATABASE_URL:
+        config.set_main_option("sqlalchemy.url", DATABASE_URL)
+        
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
